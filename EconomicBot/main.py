@@ -15,8 +15,12 @@ load_cog(client, connection)
 
 @client.event
 async def on_ready():
+    disnake.Activity(
+        name="FiloqusCommunity",
+        details="Coding"
+    )
     try:
-        print("Бот готов к работе")
+        print("Bot active")
         cursor = connection.cursor()
         cursor.execute("""CREATE TABLE IF NOT EXISTS users (
                         name TEXT,
@@ -26,7 +30,10 @@ async def on_ready():
                         lvl INTEGER,
                         ecclass TEXT,
                         job TEXT,
-                        inventory TEXT
+                        inventory TEXT,
+                        ban TEXT,
+                        mute TEXT,
+                        kick TEXT
         )""")
         connection.commit()
 
@@ -34,25 +41,11 @@ async def on_ready():
             for member in guild.members:
                 cursor.execute("SELECT id FROM users WHERE id = ?", (member.id,))
                 if cursor.fetchone() is None:
-                    print("Дата база создаётся")
-                    cursor.execute("INSERT INTO users(name, id, cash, rep, lvl, ecclass, job, inventory) VALUES (?, ?, 0, 0, 1, ?, ?, ?)", (str(member), member.id, "Отсутствует", "Подработка", "Ничего"))
+                    print("База данных создаётся")
+                    cursor.execute("INSERT INTO users(name, id, cash, rep, lvl, ecclass, job, inventory) VALUES (?, ?, 0, 0, 1, ?, ?, ?, ?)", (str(member), member.id, "Отсутствует", "Подработка", "Ничего", "Нету"))
                     connection.commit()
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
-    finally:
-        cursor.close()
-
-@client.event
-async def on_member_join(member):
-    try:
-        cursor = connection.cursor()
-        cursor.execute("SELECT id FROM users WHERE id = ?", (member.id,))
-        if cursor.fetchone() is None:
-            cursor.execute("INSERT INTO users VALUES (?, ?, 0, 0, 1, ?, ?, ?)", (str(member), member.id, "Отсутствует", "Подработка", "Ничего"))
-            connection.commit()  # Commit after adding the user
-            await member.send("Добро пожаловать на сервер! Ваш баланс установлен в 0.")
-    except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        print(f"QLS ошибка: {e}")
     finally:
         cursor.close()
 

@@ -1,20 +1,17 @@
 import disnake
 from disnake.ext import commands
 
-class Add(commands.Cog):
+class TestingCommands(commands.Cog):
     def __init__(self, bot: commands.Bot, conn):
         self.bot = bot
         self.conn = conn
+    @commands.has_permissions(administrator=True)
 
     @commands.slash_command(
             name="add",
             description="Админ комманда для теста. Использовать только в том случае, если вы хотите выдать всё и сразу"
     )
-    @commands.has_permissions(administrator=True)
-    async def add(
-        self, 
-        inter, 
-        member: disnake.Member, 
+    async def add(self, inter, member: disnake.Member, 
         classes: str = commands.Param(choices=['Senior', 'Middle', 'Junior']), 
         job: str = commands.Param(choices=['Программист', '3D Дизайнер', '2D Дизайнер', 'Строитель', 'Подработка', 'Косметолог', 'Столяр', 'Бухгалтер']), 
         money: int = commands.Param(description="Выдать деньги участнику сервера"), 
