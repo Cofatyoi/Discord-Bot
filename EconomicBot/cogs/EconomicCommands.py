@@ -198,8 +198,12 @@ class EconomicCommands(commands.Cog):
 
             cursor = self.conn.cursor()
             SQLProcessing.CheckEconomicalMember(self, member)
+            SQLProcessing.CheckLvlMember(self, member)
             profile_data = cursor.execute("SELECT cash, rep, lvl, ecclass, job FROM users WHERE id = ?", (member.id,))
             profile_data = cursor.fetchone()
+            rep, lvl = profile_data[1], profile_data[2]
+            level_up = 1 * lvl**2 + 15 * lvl + 15
+            level_up = level_up - rep
 
             await inter.send(
                 embed=disnake.Embed(
@@ -208,6 +212,7 @@ class EconomicCommands(commands.Cog):
                         " ``Базовая информация`` \n"
                         f"``` Баланс: {profile_data[0]} ```"
                         f"``` Уровень: {profile_data[2]} ```"
+                        f"``` К следующему уровню: {level_up} репутации```"
                         f"``` Репутация: {profile_data[1]} ```"
                         f"``` Класс: {profile_data[3]} ```"
                         f"``` Работа: {profile_data[4]} ```"),

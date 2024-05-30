@@ -9,16 +9,45 @@ class SQLProcessing():
 
         def CheckEconomicalUser(self, user_id):
             cursor = self.conn.cursor()
-            profile_data = cursor.execute("SELECT cash, rep, lvl, ecclass, job, inventory, ban, mute, kick FROM users WHERE id = ?", (user_id.id,))
-            profile_data = cursor.fetchone()
-            if profile_data is None:
+            user_data = cursor.execute("SELECT cash, rep, lvl, ecclass, job, inventory, ban, mute, kick FROM users WHERE id = ?", (user_id.id,))
+            user_data = cursor.fetchone()
+            if user_data is None:
                 cursor.execute("INSERT INTO users(name, id, cash, rep, lvl, ecclass, job, inventory, ban, mute, kick) VALUES (?, ?, 0, 0, 1, ?, ?, ?, ?, ?, ?)", (str(user_id), user_id.id, "Отсутствует", "Подработка", "Ничего", "Нету", "Нету", "Нету"))
         def CheckEconomicalMember(self, member):
             cursor = self.conn.cursor()
-            member_data = cursor.execute("SELECT cash, rep, lvl, ecclass, job, inventory, ban, mute, FROM users WHERE id = ?", (member.id,))  # mention member\
+            member_data = cursor.execute("SELECT cash, rep, lvl, ecclass, job, inventory, ban, mute FROM users WHERE id = ?", (member.id,))  # mention member\
             member_data = cursor.fetchone()
             if member_data is None:
                 cursor.execute("INSERT INTO users(name, id, cash, rep, lvl, ecclass, job, inventory, ban, mute, kick) VALUES (?, ?, 0, 0, 1, ?, ?, ?, ?, ?, ?)", (str(member), member.id, "Отсутствует", "Подработка", "Ничего", "Нету", "Нету", "Нету"))
+        def CheckLvlUser(self, user):
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT rep, lvl FROM users WHERE id = ?", (user.id,))
+            LvlDataLoading = cursor.fetchone()
+            rep, lvl = LvlDataLoading
+    
+            level_up = 1 * lvl**2 + 15 * lvl + 15
+            while rep >= level_up:
+                lvl += 1
+                level_up = 1 * lvl**2 + 15 * lvl + 15
+
+            cursor.execute("UPDATE users SET lvl = ? WHERE id = ?", (lvl, user.id))
+            self.conn.commit()
+            cursor.close()
+
+        def CheckLvlMember(self, member):
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT rep, lvl FROM users WHERE id = ?", (member.id,))
+            LvlDataLoading = cursor.fetchone()
+            rep, lvl = LvlDataLoading
+    
+            level_up = 1 * lvl**2 + 15 * lvl + 15
+            while rep >= level_up:
+                lvl += 1
+                level_up = 1 * lvl**2 + 15 * lvl + 15
+
+            cursor.execute("UPDATE users SET lvl = ? WHERE id = ?", (lvl, member.id))
+            self.conn.commit()
+            cursor.close()
 
 class CooldownProcessing():
     @commands.Cog.listener()
@@ -49,3 +78,13 @@ class ModerateProcessing():
                     return False
                 return True
             return commands.check(predicate)
+        
+        def ModerationERRORS(self, member, user):
+            async def CheckMemberChoice(inter):
+                if member == user:
+                   embed = disnake.Embed(
+                        title="Проблема в использовании комманд Модерации",
+                        description="Вы выбрали себя же что бы выполнить комманду Модерации",
+                        color=disnake.Colour.og_blurple()
+                   )
+                await inter.response.send_message(embed=embed, ephemeral=True)
