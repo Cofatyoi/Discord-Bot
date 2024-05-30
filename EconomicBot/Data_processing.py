@@ -19,7 +19,7 @@ class SQLProcessing():
             member_data = cursor.fetchone()
             if member_data is None:
                 cursor.execute("INSERT INTO users(name, id, cash, rep, lvl, ecclass, job, inventory, ban, mute, kick) VALUES (?, ?, 0, 0, 1, ?, ?, ?, ?, ?, ?)", (str(member), member.id, "Отсутствует", "Подработка", "Ничего", "Нету", "Нету", "Нету"))
-        def CheckLvlMember(self, rep):
+        def CheckLvlMember(self, member, rep):
             cursor = self.conn.cursor()
             LvlDataLoading = cursor.execute("SELECT rep, lvl FROM users WHERE id = ?", (member.id,))
             
@@ -55,7 +55,7 @@ class ModerateProcessing():
             return commands.check(predicate)
         
         def ModerationERRORS(self, member, user):
-            async def CheckMemberChoice(inter)
+            async def CheckMemberChoice(inter):
                 if member == user:
                    embed = disnake.Embed(
                         title="Проблема в использовании комманд Модерации",
