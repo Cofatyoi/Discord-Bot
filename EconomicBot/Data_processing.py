@@ -53,3 +53,13 @@ class ModerateProcessing():
                     return False
                 return True
             return commands.check(predicate)
+        
+        def ModerationERRORS(self, member, user):
+            async def CheckMemberChoice(inter)
+                if member == user:
+                   embed = disnake.Embed(
+                        title="Проблема в использовании комманд Модерации",
+                        description="Вы выбрали себя же что бы выполнить комманду Модерации",
+                        color=disnake.Colour.og_blurple()
+                   )
+                await inter.response.send_message(embed=embed, ephemeral=True)
